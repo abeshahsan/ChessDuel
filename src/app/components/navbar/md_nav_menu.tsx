@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSidebarOpen } from "@/app/store/client_socket_slice";
 import { RootState } from "@/app/store";
 
-export default function MdNavMenu({ }: { pages: string[] }) {
+export default function MdNavMenu() {
 
 	const dispatch = useDispatch();
 	const sidebarOpen = useSelector((state: RootState) => state.clientSocket.sidebarOpen);

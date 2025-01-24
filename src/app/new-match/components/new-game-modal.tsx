@@ -9,43 +9,21 @@ import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import { Avatar, List, ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
-
-function generate(element: React.ReactElement<unknown>) {
-	return [0, 1].map((value) =>
-		React.cloneElement(element, {
-			key: value,
-		})
-	);
-}
-
-const Transition = React.forwardRef(function Transition(
-	props: TransitionProps & {
-		children: React.ReactElement<any, any>;
-	},
-	ref: React.Ref<unknown>
-) {
-	return (
-		<Slide
-			direction='up'
-			ref={ref}
-			{...props}
-		/>
-	);
-});
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
 
 export default function NewGameModal({ isOpen }: { isOpen?: boolean }) {
 	const [open, setOpen] = React.useState(isOpen ?? true);
 
 	const [isCopied, setIsCopied] = React.useState(false);
-	const [newMatchLink, setNewMatchLink] = React.useState("https://chess.com");
+	const [newMatchLink] = React.useState("https://chess.com");
 
 	const handleClickOpen = () => {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
-		setOpen(false);
-	};
+	const socket = useSelector((state: RootState) => state.clientSocket.socket);
+	const players = useSelector((state: RootState) => state.match.players);
 
 	return (
 		<>
@@ -94,19 +72,34 @@ export default function NewGameModal({ isOpen }: { isOpen?: boolean }) {
 					sx={{ border: 2, borderColor: "divider", margin: 2, marginTop: 0, borderRadius: 2, padding: 0 }}
 				>
 					<List>
-						{generate(
-							<ListItem>
+						{players.map((player, index) => (
+							<ListItem key={index}>
 								<ListItemAvatar>
 									<Avatar>
 										<AccountCircle />
 									</Avatar>
 								</ListItemAvatar>
-								<ListItemText primary='Single-line item' />
+								<ListItemText primary={player?.id?? 'Waiting for player'} />
 							</ListItem>
-						)}
+						))}
 					</List>
 				</DialogContent>
 			</Dialog>
 		</>
 	);
 }
+
+const Transition = React.forwardRef(function Transition(
+	props: TransitionProps & {
+		children: React.ReactElement<any, any>;
+	},
+	ref: React.Ref<unknown>
+) {
+	return (
+		<Slide
+			direction='up'
+			ref={ref}
+			{...props}
+		/>
+	);
+});

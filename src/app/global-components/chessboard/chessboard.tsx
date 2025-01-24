@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CSSProperties } from "react";
 import { Chess, Piece, Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
@@ -10,7 +10,7 @@ import Grid from "@mui/material/Grid2";
 import { Box, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
-import { addEventHandler, subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
+import useChessboardEffect from "@/app/new-match/hooks/useChessboardEffect";
 
 const ChessboardUI = ({}: Props) => {
 	const [game, setGame] = useState(new Chess());
@@ -23,106 +23,9 @@ const ChessboardUI = ({}: Props) => {
 
 	const dispatch = useDispatch();
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
+	let players = useSelector((state: RootState) => state.match.players);
 
-	useEffect(() => {
-		if (socket?.active) {
-			dispatch(subscribe(ChessboardUI.name));
-			dispatch(
-				addEventHandler({
-					subscriberName: ChessboardUI.name,
-					event: "chess-move",
-					callback: (move: { from: Square; to: Square }) => {
-						try {
-							game.move(move);
-							setGame(() => {
-								return new Chess(game.fen());
-							});
-						} catch (error) {
-							// console.log("Invalid move", error);
-						}
-					},
-				})
-			);
-
-			dispatch(
-				addEventHandler({
-					subscriberName: ChessboardUI.name,
-					event: "match-created",
-					callback: (match) => {
-						console.log("Match created", match);
-					},
-				})
-			);
-			socket?.emit("create-match");
-		}
-
-
-		return () => {
-			unsubscribeComponent(ChessboardUI.name);
-		};
-	}, [socket?.active]);
-
-	const onSquareClick = (square: Square) => {
-		if (activeSquare) {
-			try {
-				const capturedPiece = game.get(square);
-
-				game.move({
-					from: activeSquare,
-					to: square,
-					promotion: "q",
-				});
-
-				socket?.emit("chess-move", { from: activeSquare, to: square, promotion: "q" });
-
-				if (capturedPiece) {
-					setCapturedPieces(() => {
-						return [...capturedPieces, capturedPiece];
-					});
-				}
-
-				setGame(() => {
-					return new Chess(game.fen());
-				});
-				setActiveSquare(null);
-				setValidSquares([]);
-			} catch (error) {
-				setActiveSquare(null);
-				setValidSquares([]);
-			}
-		} else {
-			if (hasPiece(square) && hasTurn(square)) {
-				setActiveSquare(square);
-				setValidSquares(game.moves({ square: square }) as Square[]);
-			}
-		}
-	};
-
-	function hasPiece(square: Square): boolean {
-		return game.get(square) !== null;
-	}
-
-	function hasTurn(square: Square): boolean {
-		return game.get(square).color === game.turn();
-	}
-
-	const updateSquareStyles = () => {
-		validSquares.forEach((square: Square) => {
-			square = square
-				.toString()
-				.replace(/[x+]|=./gi, "")
-				.slice(-2) as Square;
-
-			customSquareStyles[square] = {
-				background: validSquaresColor,
-			};
-		});
-		if (activeSquare) {
-			customSquareStyles[activeSquare] = {
-				background: activeSquareColor,
-			};
-		}
-	};
+	useChessboardEffect(socket, game, setGame, dispatch);
 
 	updateSquareStyles();
 
@@ -255,6 +158,68 @@ const ChessboardUI = ({}: Props) => {
 			return "Check";
 		}
 		return "";
+	}
+
+	function onSquareClick(square: Square) {
+		if (activeSquare) {
+			try {
+				const capturedPiece = game.get(square);
+
+				game.move({
+					from: activeSquare,
+					to: square,
+					promotion: "q",
+				});
+
+				socket?.emit("chess-move", { from: activeSquare, to: square, promotion: "q" });
+
+				if (capturedPiece) {
+					setCapturedPieces(() => {
+						return [...capturedPieces, capturedPiece];
+					});
+				}
+
+				setGame(() => {
+					return new Chess(game.fen());
+				});
+				setActiveSquare(null);
+				setValidSquares([]);
+			} catch (error) {
+				setActiveSquare(null);
+				setValidSquares([]);
+			}
+		} else {
+			if (hasPiece(square) && hasTurn(square)) {
+				setActiveSquare(square);
+				setValidSquares(game.moves({ square: square }) as Square[]);
+			}
+		}
+	}
+
+	function hasPiece(square: Square): boolean {
+		return game.get(square) !== null;
+	}
+
+	function hasTurn(square: Square): boolean {
+		return game.get(square).color === game.turn();
+	}
+
+	function updateSquareStyles() {
+		validSquares.forEach((square: Square) => {
+			square = square
+				.toString()
+				.replace(/[x+]|=./gi, "")
+				.slice(-2) as Square;
+
+			customSquareStyles[square] = {
+				background: validSquaresColor,
+			};
+		});
+		if (activeSquare) {
+			customSquareStyles[activeSquare] = {
+				background: activeSquareColor,
+			};
+		}
 	}
 };
 
