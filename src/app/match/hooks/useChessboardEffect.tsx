@@ -26,18 +26,6 @@ const useChessboardEffect = (socket: Socket | null, game: Chess, setGame: any, d
 					},
 				})
 			);
-
-			dispatch(
-				addEventHandler({
-					subscriberName: ChessboardUI.name,
-					event: "match-created",
-					callback: (match) => {
-						console.log("Match created", match);
-						dispatch(createMatch(match));
-					},
-				})
-			);
-			socket?.emit("create-match");
 		}
 
 		return () => {

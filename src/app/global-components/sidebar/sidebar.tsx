@@ -64,7 +64,7 @@ export default function ResponsiveDrawer() {
 						<span>Contact</span>
 					</Link>
 					<Link
-						href='/new-match'
+						href='/match/new'
 						className='flex items-center p-2 hover:bg-gray-800 rounded'
 					>
 						<SportsEsports className='h-5 w-5 mr-2' />

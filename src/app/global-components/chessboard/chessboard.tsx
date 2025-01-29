@@ -10,22 +10,20 @@ import Grid from "@mui/material/Grid2";
 import { Box, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
-import useChessboardEffect from "@/app/new-match/hooks/useChessboardEffect";
+import useChessboardEffect from "@/app/match/hooks/useChessboardEffect";
 
-const ChessboardUI = ({}: Props) => {
-	const [game, setGame] = useState(new Chess());
+type ChessboardUIProps = {
+	game: Chess;
+	setGame: any;
+};
 
+const ChessboardUI = ({ game, setGame }: ChessboardUIProps) => {
 	const [validSquares, setValidSquares] = useState<Square[]>([]);
 	const [activeSquare, setActiveSquare] = useState<Square | null>(null);
 	const [capturedPieces, setCapturedPieces] = useState<Piece[]>([]);
 
 	let customSquareStyles: ICustomSquareStyles = {};
-
-	const dispatch = useDispatch();
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
-	let players = useSelector((state: RootState) => state.match.players);
-
-	useChessboardEffect(socket, game, setGame, dispatch);
 
 	updateSquareStyles();
 
@@ -280,8 +278,6 @@ const CapturedPieces = ({ capturedPieces, color }: { capturedPieces: Piece[]; co
 
 const validSquaresColor = "radial-gradient(circle, rgb(0, 255, 0) 45%, transparent 45%)";
 const activeSquareColor = "radial-gradient(circle,  transparent 20%, rgb(113, 113, 238) 85%)";
-
-type Props = {};
 
 interface ICustomSquareStyles {
 	[key: string]: {

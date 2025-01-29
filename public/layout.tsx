@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import CustomModal from "@/app/new-match/page";
+import CustomModal from "@/app/match/new/page";
 
 const Layout = ({
 	children,

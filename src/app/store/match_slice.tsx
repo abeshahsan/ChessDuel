@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface MatchState {
+export interface MatchState {
 	id: string;
 	players: {
 		color: string;
