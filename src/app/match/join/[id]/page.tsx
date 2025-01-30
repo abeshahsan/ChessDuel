@@ -7,7 +7,7 @@ import NewGameModal from "../../components/new-game-modal";
 import { Chess } from "chess.js";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
-import { addEventHandler, subscribe, unsubscribeComponent } from "../../../store/client_socket_slice";
+import { addEventHandler,  subscribe, unsubscribeComponent } from "../../../store/client_socket_slice";
 import { createMatch, MatchState } from "../../../store/match_slice";
 
 import { useParams } from "next/navigation";

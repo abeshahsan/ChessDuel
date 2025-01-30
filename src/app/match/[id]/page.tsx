@@ -6,10 +6,8 @@ import { Chess } from "chess.js";
 import { useDispatch, useSelector } from "react-redux";
 
 import ChessboardUI from "@/app/global-components/chessboard/chessboard";
-import NewGameModal from "@/app/match/components/new-game-modal";
 import { RootState } from "@/app/store";
-import { addEventHandler, subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
-import { createMatch, MatchState } from "@/app/store/match_slice";
+import {  subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
 
 import { useParams } from "next/navigation";
 

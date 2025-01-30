@@ -1,6 +1,6 @@
 import { Server as IOServer, Socket } from "socket.io";
 import { NextApiRequest } from "next";
-import { addSocketEvents } from "./socket_events";
+import { addSocketEvents, allClientIDs } from "./socket_events";
 
 let io: IOServer;
 
@@ -20,8 +20,21 @@ export default function handler(req: NextApiRequest, res: any) {
 	});
 
 	io.on("connection", (socket: Socket) => {
-		console.log(`Socket.io client connected [id=${socket.id}]`);
+		let id = socket.handshake.query.clientId as string;
+
+		console.log(typeof id);
+
+		if(!id) id = socket.id;
+
+		allClientIDs[id] = socket.id;
+		
+		console.log(`Socket.io client connected with ID: ${id}`);
 		addSocketEvents(socket);
+
+		socket.on("disconnect", () => {
+			console.log(`Socket.io client disconnected with ID: ${id}}`);
+			delete allClientIDs[id];
+		});
 	});
 
 	res.socket.server.io = io;

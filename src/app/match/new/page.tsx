@@ -2,13 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ChessboardUI from "../../global-components/chessboard/chessboard";
-import NewGameModal from "../components/new-game-modal";
-import { Chess } from "chess.js";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { addEventHandler, subscribe, unsubscribeComponent } from "../../store/client_socket_slice";
-import { createMatch, MatchState } from "../../store/match_slice";
+
+import ChessboardUI from "@/app/global-components/chessboard/chessboard";
+import NewGameModal from "@/app/match/components/new-game-modal";
+import { RootState } from "@/app/store";
+import { addEventHandler, subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
+import { createMatch, MatchState } from "@/app/store/match_slice";
+
+import { Chess } from "chess.js";
 
 const NewMatch = () => {
 	const [isOpen, setIsOpen] = useState(true);
@@ -17,11 +19,13 @@ const NewMatch = () => {
 	const [game, setGame] = useState(new Chess());
 	const [gameUrl, setGameUrl] = useState<string | null>(null);
 
-	const socket = useSelector((state: RootState) => state.clientSocket.socket);
 	const dispatch = useDispatch();
+	const socket = useSelector((state: RootState) => state.clientSocket.socket);
 
 	useEffect(() => {
 		if (socket?.active) {
+			console.log("Creating new match...");
+			
 			socket.emit("create-match");
 			dispatch(subscribe(NewMatch.name));
 			dispatch(

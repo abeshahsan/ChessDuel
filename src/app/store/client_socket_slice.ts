@@ -1,6 +1,7 @@
 "use client";
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { WritableDraft } from "immer";
 import { Socket, io as ClientSocket } from "socket.io-client";
 
 interface ClientSocketState {
@@ -16,9 +17,9 @@ interface ClientSocketState {
 // Singleton Socket Initialization
 let socket: Socket | null = null;
 
-function initializeSocket(): Socket {
+function initializeSocket(clientID: string | null): Socket | null {
 	if (!socket) {
-		socket = ClientSocket({ path: "/api/socket" });
+		socket = ClientSocket({ path: "/api/socket", query: { clientId: clientID } });
 		socket.on("connect", () => {
 			console.log("Connected to the server");
 		});
@@ -31,7 +32,7 @@ function initializeSocket(): Socket {
 
 // Redux Slice
 const initialState: ClientSocketState = {
-	socket: initializeSocket(),
+	socket: null,
 	subscribers: {},
 	sidebarOpen: false,
 };
@@ -91,12 +92,17 @@ const clientSocketSlice = createSlice({
 		setSidebarOpen: (state, action) => {
 			state.sidebarOpen = action.payload;
 		},
+		initializeSocketAfterLoad: (state, action: PayloadAction<string | null>) => {
+			state.socket = initializeSocket(action.payload) as unknown as WritableDraft<Socket>;
+		},
 	},
 });
 
-export const { disconnectSocket, subscribe, addEventHandler, unsubscribeComponent, unsubscribeEvent, setSidebarOpen } =
+export const { disconnectSocket, subscribe, addEventHandler, unsubscribeComponent, unsubscribeEvent, setSidebarOpen, initializeSocketAfterLoad } =
 	clientSocketSlice.actions;
 
 export const selectSocket = (state: { clientSocket: ClientSocketState }) => state.clientSocket.socket;
+
+// export { initializeSocket };
 
 export default clientSocketSlice.reducer;

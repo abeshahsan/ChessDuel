@@ -9,6 +9,12 @@ type Match = {
 	}[];
 };
 
+type persistenSocketIDs = {
+	[clientId: string]: string;
+}
+
+export const allClientIDs: persistenSocketIDs = {};
+
 let activeMatches: { [matchId: string]: Match } = {};
 
 export function addSocketEvents(socket: Socket) {
@@ -36,6 +42,14 @@ export function addSocketEvents(socket: Socket) {
 			],
 		};
 		socket.emit("match-created", activeMatches[matchId]);
+	});
+
+	socket.on("start-match", (matchId: string) => {
+		// console.log(`Start match request received: ${matchId}`);
+		const match = activeMatches[matchId];
+		if (match) {
+			socket.to(match.players[1].socketID).emit("match-started", match);
+		}
 	});
 
 	socket.on("join-match", (matchId: string) => {
