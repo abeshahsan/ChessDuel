@@ -37,6 +37,22 @@ export function addSocketEvents(socket: Socket) {
 		};
 		socket.emit("match-created", activeMatches[matchId]);
 	});
+
+	socket.on("join-match", (matchId: string) => {
+		console.log(`Join match request received: ${matchId}`);
+		const match = activeMatches[matchId];
+		if (match) {
+			match.players.push({
+				id: "2",
+				color: "black",
+				socketID: socket.id,
+			});
+			socket.emit("match-joined", match);
+			socket.to(match.players[0].socketID).emit("match-joined", match);
+		} else {
+			socket.emit("match-not-found");
+		}
+	});
 }
 
 function randomMatchId() {

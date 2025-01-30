@@ -7,7 +7,7 @@ import NewGameModal from "../components/new-game-modal";
 import { Chess } from "chess.js";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { addEventHandler, subscribe } from "../../store/client_socket_slice";
+import { addEventHandler, subscribe, unsubscribeComponent } from "../../store/client_socket_slice";
 import { createMatch, MatchState } from "../../store/match_slice";
 
 const NewMatch = () => {
@@ -19,7 +19,7 @@ const NewMatch = () => {
 
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
 	const dispatch = useDispatch();
-	
+
 	useEffect(() => {
 		if (socket?.active) {
 			socket.emit("create-match");
@@ -34,7 +34,24 @@ const NewMatch = () => {
 					},
 				})
 			);
+			dispatch(
+				addEventHandler({
+					subscriberName: NewMatch.name,
+					event: "match-joined",
+					callback: (match: MatchState) => {
+						console.log("Match joined: ", match);
+						setGameUrl(window.location.origin + "/match/join/" + match.id);
+						dispatch(createMatch(match));
+					},
+				})
+			);
 		}
+
+		return () => {
+			if (socket?.active) {
+				dispatch(unsubscribeComponent(NewMatch.name));
+			}
+		};
 	}, [socket?.active, dispatch]);
 
 	return (
@@ -43,7 +60,10 @@ const NewMatch = () => {
 				game={game}
 				setGame={setGame}
 			/>
-			<NewGameModal isOpen={isOpen} gameurl={gameUrl}/>
+			<NewGameModal
+				isOpen={isOpen}
+				gameurl={gameUrl}
+			/>
 		</div>
 	);
 };
