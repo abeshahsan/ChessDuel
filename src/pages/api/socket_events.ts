@@ -1,3 +1,4 @@
+import { match } from "assert";
 import { Server, Socket } from "socket.io";
 
 type Match = {
@@ -11,7 +12,7 @@ type Match = {
 
 type persistenSocketIDs = {
 	[clientId: string]: string;
-}
+};
 
 export const allClientIDs: persistenSocketIDs = {};
 
@@ -23,13 +24,18 @@ export function addSocketEvents(socket: Socket) {
 		socket.broadcast.emit("message", "Hello from server");
 	});
 
-	socket.on("chess-move", (move: {}) => {
-		console.log(`Chess move received: ${JSON.stringify(move)}`);
-		socket.broadcast.emit("chess-move", move);
+	socket.on("chess-move", (matchID: string, move: string) => {
+		// console.log(`Chess move received: ${matchID}`);
+		// console.log(`Chess move received: ${JSON.stringify(move)}`);
+		const match = activeMatches[matchID];
+		if (match) {
+			const opponent = match.players.filter((player) => player.socketID !== socket.id)[0];
+			socket.to(opponent.socketID).emit("chess-move", move);
+		}
 	});
 	socket.on("create-match", () => {
 		console.log("Create match request received");
-		
+
 		const matchId = randomMatchId();
 		activeMatches[matchId] = {
 			id: matchId,
@@ -48,7 +54,18 @@ export function addSocketEvents(socket: Socket) {
 		// console.log(`Start match request received: ${matchId}`);
 		const match = activeMatches[matchId];
 		if (match) {
-			socket.to(match.players[1].socketID).emit("match-started", match);
+			socket.emit("match-started", match);
+			let opponent = match.players.filter((player) => player.socketID !== socket.id)[0];
+			socket.to(opponent.socketID).emit("match-started", match);
+		}
+	});
+
+	socket.on("get-match", (matchId: string) => {
+		const match = activeMatches[matchId];
+		if (match) {
+			socket.emit("match-found", match);
+		} else {
+			socket.emit("match-not-found");
 		}
 	});
 
@@ -62,7 +79,8 @@ export function addSocketEvents(socket: Socket) {
 				socketID: socket.id,
 			});
 			socket.emit("match-joined", match);
-			socket.to(match.players[0].socketID).emit("match-joined", match);
+			let opponent = match.players.filter((player) => player.socketID !== socket.id)[0];
+			socket.to(opponent.socketID).emit("match-joined", match);
 		} else {
 			socket.emit("match-not-found");
 		}

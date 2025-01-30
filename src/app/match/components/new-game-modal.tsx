@@ -9,9 +9,12 @@ import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { useRouter, usePathname } from "next/navigation";
+import { addEventHandler } from "@/app/store/client_socket_slice";
+import { updateMatch } from "@/app/store/match_slice";
+import { subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
 
 export default function NewGameModal({ gameurl }: { isOpen?: boolean; gameurl: string | null }) {
 	const [isCopied, setIsCopied] = React.useState(false);
@@ -21,8 +24,26 @@ export default function NewGameModal({ gameurl }: { isOpen?: boolean; gameurl: s
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
 	const players = useSelector((state: RootState) => state.match.players);
 	const match = useSelector((state: RootState) => state.match);
+	const dispatch = useDispatch();
 
 	const isJoinGame = usePathname()?.includes("/join");
+
+	React.useEffect(() => {
+		dispatch(subscribe(NewGameModal.name));
+
+		if (socket?.active) {
+			dispatch(
+				addEventHandler({
+					subscriberName: NewGameModal.name,
+					event: "match-started",
+					callback: (match) => router.push(`/match/${match.id}`),
+				})
+			);
+		}
+		return () => {
+			dispatch(unsubscribeComponent(NewGameModal.name));
+		};
+	}, [socket?.active]);
 
 	return (
 		<Dialog
@@ -32,9 +53,7 @@ export default function NewGameModal({ gameurl }: { isOpen?: boolean; gameurl: s
 			aria-describedby='alert-dialog-slide-description'
 			inert={false}
 		>
-			<DialogTitle sx={{ textAlign: "center" }}>
-				{`${!isJoinGame ? "New" : "Join"} Match`}
-			</DialogTitle>
+			<DialogTitle sx={{ textAlign: "center" }}>{`${!isJoinGame ? "New" : "Join"} Match`}</DialogTitle>
 
 			<Divider />
 
@@ -100,7 +119,7 @@ export default function NewGameModal({ gameurl }: { isOpen?: boolean; gameurl: s
 					color='success'
 					disabled={!players[1]}
 					onClick={() => {
-						router.push(`/match/${match.id}`);
+						socket?.emit("start-match", match.id);
 					}}
 				>
 					Start Match

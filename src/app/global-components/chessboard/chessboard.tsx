@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CSSProperties } from "react";
 import { Chess, Piece, Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
@@ -11,6 +11,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import useChessboardEffect from "@/app/match/hooks/useChessboardEffect";
+import { subscribe } from "@/app/store/client_socket_slice";
 
 type ChessboardUIProps = {
 	game: Chess;
@@ -24,6 +25,8 @@ const ChessboardUI = ({ game, setGame }: ChessboardUIProps) => {
 
 	let customSquareStyles: ICustomSquareStyles = {};
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
+	const match = useSelector((state: RootState) => state.match);
+	const dispatch = useDispatch();
 
 	updateSquareStyles();
 
@@ -169,7 +172,7 @@ const ChessboardUI = ({ game, setGame }: ChessboardUIProps) => {
 					promotion: "q",
 				});
 
-				socket?.emit("chess-move", { from: activeSquare, to: square, promotion: "q" });
+				socket?.emit("chess-move", match.id, { from: activeSquare, to: square, promotion: "q" });
 
 				if (capturedPiece) {
 					setCapturedPieces(() => {

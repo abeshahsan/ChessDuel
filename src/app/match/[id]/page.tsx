@@ -7,9 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ChessboardUI from "@/app/global-components/chessboard/chessboard";
 import { RootState } from "@/app/store";
-import {  subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
+import { addEventHandler, subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
 
 import { useParams } from "next/navigation";
+import { updateMatch } from "@/app/store/match_slice";
 
 const Match = () => {
 	const [isOpen, setIsOpen] = useState(true);
@@ -24,19 +25,36 @@ const Match = () => {
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
 	const dispatch = useDispatch();
 
-	useEffect(() => {
+	React.useEffect(() => {
+		dispatch(subscribe(Match.name));
+		socket?.emit("get-match");
 		if (socket?.active) {
-			dispatch(subscribe(Match.name));
-			
-			
+			dispatch(
+				addEventHandler({
+					subscriberName: Match.name,
+					event: "get-match",
+					callback: (match) => dispatch(updateMatch(match)),
+				})
+			);
+			dispatch(
+				addEventHandler({
+					subscriberName: Match.name,
+					event: "chess-move",
+					callback: (move) => {
+						try {
+							game.move(move);
+							setGame(new Chess(game.fen()));
+						} catch (e) {
+							// console.error(e);
+						}
+					},
+				})
+			);
 		}
-
 		return () => {
-			if (socket?.active) {
-				dispatch(unsubscribeComponent(Match.name));
-			}
+			dispatch(unsubscribeComponent(Match.name));
 		};
-	}, [socket?.active, dispatch]);
+	}, [socket?.active]);
 
 	return (
 		<div className={"w-3/4 md:w-2/5 h-screen mx-auto"}>

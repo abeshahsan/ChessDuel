@@ -103,6 +103,4 @@ export const { disconnectSocket, subscribe, addEventHandler, unsubscribeComponen
 
 export const selectSocket = (state: { clientSocket: ClientSocketState }) => state.clientSocket.socket;
 
-// export { initializeSocket };
-
 export default clientSocketSlice.reducer;
