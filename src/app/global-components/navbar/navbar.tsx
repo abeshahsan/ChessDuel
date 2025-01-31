@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -6,20 +8,19 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import Link from "next/link";
-import { auth, signIn } from "@/auth";
-import UserMenu from "./user_menu";
 import MdNavMenu from "./md_nav_menu";
+import { signIn, useSession } from "next-auth/react";
+import UserMenu from "./user_menu";
+import { Skeleton } from "@mui/material";
 
 // export const pages = ["Products", "Pricing", "Blog"];
 export const pages = [];
 
-async function ResponsiveAppBar() {
-	const session = await auth();
-
+function ResponsiveAppBar() {
 	return (
 		<AppBar
 			position='fixed'
-			sx={{ backgroundColor: "#333" }}
+			sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
 		>
 			<Container maxWidth='xl'>
 				<Toolbar disableGutters>
@@ -54,10 +55,12 @@ async function ResponsiveAppBar() {
 
 					<MdNavMenu pages={pages} />
 
-					<div className="ml-10 hidden md:block"/>
+					<div className='ml-10 hidden md:block' />
 
-					<Link className="flex flex-row mx-auto"
-					href='/'>
+					<Link
+						className='flex flex-row mx-auto'
+						href='/'
+					>
 						<Box
 							component='img'
 							sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
@@ -94,30 +97,55 @@ async function ResponsiveAppBar() {
 						))}
 					</Box>
 
-					{session ? <UserMenu /> : <SignInButton />}
+					<NavbarActions />
 				</Toolbar>
 			</Container>
 		</AppBar>
 	);
 }
 
+// return usermenu, sign in button or loading skeleton
+
+function NavbarActionLoadingSkeleton() {
+	return (
+		<>
+			<Skeleton
+				variant='circular'
+				width={40}
+				height={40}
+			/>
+			<Skeleton
+				variant='rectangular'
+				width={80}
+				height={40}
+			/>
+		</>
+	);
+}
+
+function NavbarActions() {
+	const { data: session, status } = useSession();
+
+	if (status === "loading") {
+		return <NavbarActionLoadingSkeleton />;
+	}
+
+	if (session?.user) {
+		return <UserMenu />;
+	}
+
+	return <SignInButton />;
+}
+
 function SignInButton() {
 	return (
-		<form
-			action={async () => {
-				"use server";
-
-				await signIn("github");
-			}}
+		<Button
+			variant='contained'
+			sx={{ my: 2, display: "block", backgroundColor: "#fc8c03", ":hover": { backgroundColor: "#f5a623" } }}
+			onClick={() => signIn("github")}
 		>
-			<Button
-				variant='contained'
-				sx={{ my: 2, display: "block", backgroundColor: "#fc8c03", ":hover": { backgroundColor: "#f5a623" } }}
-				type='submit'
-			>
-				Sign in
-			</Button>
-		</form>
+			Sign in
+		</Button>
 	);
 }
 

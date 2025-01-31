@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Chess } from "chess.js";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "next/navigation";
 
 import ChessboardUI from "@/app/global-components/chessboard/chessboard";
 import { RootState } from "@/app/store";
 import { addEventHandler, subscribe, unsubscribeComponent } from "@/app/store/client_socket_slice";
 
-import { useParams } from "next/navigation";
 import { updateMatch } from "@/app/store/match_slice";
 
 const Match = () => {

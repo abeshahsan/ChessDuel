@@ -20,12 +20,13 @@ export const metadata: Metadata = {
 	description: "Play chess with your friends",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
 	const left = 275;
+
 	return (
 		<html
 			lang='en'

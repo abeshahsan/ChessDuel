@@ -2,13 +2,20 @@
 
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { RootState, store } from ".";
-import { use, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { initializeSocketAfterLoad } from "./client_socket_slice";
+import { ThemeProvider } from "@mui/material";
+import theme from "../theme";
+import { SessionProvider } from "next-auth/react";
 
 export default function StoreProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<Provider store={store}>
-			<_StoreProviderComponent>{children}</_StoreProviderComponent>
+			<ThemeProvider theme={theme}>
+				<SessionProvider>
+					<_StoreProviderComponent>{children}</_StoreProviderComponent>
+				</SessionProvider>
+			</ThemeProvider>
 		</Provider>
 	);
 }
