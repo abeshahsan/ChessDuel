@@ -106,7 +106,7 @@ function ResponsiveAppBar() {
 
 // return usermenu, sign in button or loading skeleton
 
-function NavbarActionLoadingSkeleton() {
+function LoadingSkeleton() {
 	return (
 		<>
 			<Skeleton
@@ -127,7 +127,7 @@ function NavbarActions() {
 	const { data: session, status } = useSession();
 
 	if (status === "loading") {
-		return <NavbarActionLoadingSkeleton />;
+		return <LoadingSkeleton />;
 	}
 
 	if (session?.user) {
@@ -142,7 +142,7 @@ function SignInButton() {
 		<Button
 			variant='contained'
 			sx={{ my: 2, display: "block", backgroundColor: "#fc8c03", ":hover": { backgroundColor: "#f5a623" } }}
-			onClick={() => signIn("github")}
+			onClick={() => signIn()}
 		>
 			Sign in
 		</Button>
