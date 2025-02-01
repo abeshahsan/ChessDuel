@@ -1,14 +1,11 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import ResponsiveAppBar from "./navbar/navbar";
 import ResponsiveDrawer from "./sidebar/sidebar";
 
-
-const drawerWidth = 240;
-
-export default function NavAndDrawer() {
-    const [mobileOpen, setMobileOpen] = useState(false);
+export default function NavAndDrawer({ drawerWidth }: Readonly<{ drawerWidth: number }>) {
+	const [mobileOpen, setMobileOpen] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
 
 	const handleDrawerClose = () => {
@@ -21,21 +18,21 @@ export default function NavAndDrawer() {
 	};
 
 	const handleDrawerToggle = () => {
-        console.log("handleDrawerToggle");
-        
+		console.log("handleDrawerToggle");
+
 		if (!isClosing) {
 			setMobileOpen(!mobileOpen);
 		}
 	};
-    return (
-        <>
-            <ResponsiveAppBar handleDrawerToggle={handleDrawerToggle} />
-            <ResponsiveDrawer 
-            drawerWidth={drawerWidth}
-            mobileOpen={mobileOpen}
-            handleDrawerClose={handleDrawerClose}
-            handleDrawerTransitionEnd={handleDrawerTransitionEnd}
-            />
-        </>
-    );
+	return (
+		<>
+			<ResponsiveAppBar handleDrawerToggle={handleDrawerToggle} />
+			<ResponsiveDrawer
+				drawerWidth={drawerWidth}
+				mobileOpen={mobileOpen}
+				handleDrawerClose={handleDrawerClose}
+				handleDrawerTransitionEnd={handleDrawerTransitionEnd}
+			/>
+		</>
+	);
 }

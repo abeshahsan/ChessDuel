@@ -1,11 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import "@/app/globals.css";
 import { Metadata } from "next";
 import StoreProvider from "./store/StoreProvider";
 import { Box, Toolbar } from "@mui/material";
 import NavAndDrawer from "./global-components/nav_and_drawer";
 
-const drawerWidth = 240;
+import "@/app/globals.css";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -22,13 +21,13 @@ export const metadata: Metadata = {
 	description: "Play chess with your friends",
 };
 
+const drawerWidth = 240;
+
 export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const left = 275;
-
 	return (
 		<html
 			lang='en'
@@ -40,9 +39,7 @@ export default async function RootLayout({
 			>
 				<StoreProvider>
 					<Box sx={{ display: "flex" }}>
-						<NavAndDrawer
-							// drawerWidth={drawerWidth}
-						 />
+						<NavAndDrawer drawerWidth={drawerWidth} />
 						<Box
 							component='main'
 							sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
