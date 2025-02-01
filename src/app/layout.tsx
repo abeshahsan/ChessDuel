@@ -3,7 +3,7 @@ import "@/app/globals.css";
 import { Metadata } from "next";
 import StoreProvider from "./store/StoreProvider";
 import { Box, Toolbar } from "@mui/material";
-import NavAndDrawer from "./nav_and_drawer";
+import NavAndDrawer from "./global-components/nav_and_drawer";
 
 const drawerWidth = 240;
 

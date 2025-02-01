@@ -8,10 +8,10 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import Link from "next/link";
-import MdNavMenu from "./md_nav_menu";
 import { signIn, useSession } from "next-auth/react";
 import UserMenu from "./user_menu";
-import { Skeleton } from "@mui/material";
+import { IconButton, Skeleton } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 // export const pages = ["Products", "Pricing", "Blog"];
 export const pages = [];
@@ -53,10 +53,18 @@ function ResponsiveAppBar({ handleDrawerToggle }: { handleDrawerToggle: () => vo
 						</Typography>
 					</Link>
 
-					<MdNavMenu
-						pages={pages}
-						handleDrawerToggle={handleDrawerToggle}
-					/>
+					<Box sx={{ display: { xs: "flex", md: "none" } }}>
+						<IconButton
+							size='large'
+							aria-label='account of current user'
+							aria-controls='menu-appbar'
+							aria-haspopup='true'
+							onClick={handleDrawerToggle}
+							color='inherit'
+						>
+							<MenuIcon />
+						</IconButton>
+					</Box>
 
 					<div className='ml-10 hidden md:block' />
 

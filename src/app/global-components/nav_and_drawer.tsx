@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from "react";
-import ResponsiveAppBar from "./global-components/navbar/navbar";
-import ResponsiveDrawer from "./global-components/sidebar/sidebar";
+import ResponsiveAppBar from "./navbar/navbar";
+import ResponsiveDrawer from "./sidebar/sidebar";
+
 
 const drawerWidth = 240;
 
