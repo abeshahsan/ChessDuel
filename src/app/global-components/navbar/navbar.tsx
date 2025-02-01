@@ -54,14 +54,7 @@ function ResponsiveAppBar({ handleDrawerToggle }: { handleDrawerToggle: () => vo
 					</Link>
 
 					<Box sx={{ display: { xs: "flex", md: "none" } }}>
-						<IconButton
-							size='large'
-							aria-label='account of current user'
-							aria-controls='menu-appbar'
-							aria-haspopup='true'
-							onClick={handleDrawerToggle}
-							color='inherit'
-						>
+						<IconButton onClick={handleDrawerToggle}>
 							<MenuIcon />
 						</IconButton>
 					</Box>
@@ -137,15 +130,9 @@ function LoadingSkeleton() {
 function NavbarActions() {
 	const { data: session, status } = useSession();
 
-	if (status === "loading") {
-		return <LoadingSkeleton />;
-	}
+	if (status === "loading") return <LoadingSkeleton />;
 
-	if (session?.user) {
-		return <UserMenu />;
-	}
-
-	return <SignInButton />;
+	return session?.user ? <UserMenu /> : <SignInButton />;
 }
 
 function SignInButton() {

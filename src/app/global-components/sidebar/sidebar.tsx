@@ -64,8 +64,7 @@ export default function ResponsiveDrawer({
 	return (
 		<Box
 			component='nav'
-			sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-			aria-label='mailbox folders'
+			sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
 		>
 			<Drawer
 				variant='temporary'
@@ -77,7 +76,7 @@ export default function ResponsiveDrawer({
 				}}
 				sx={{
 					zIndex: (theme) => theme.zIndex.drawer,
-					display: { xs: "block", sm: "none" },
+					display: { xs: "block", md: "none" },
 					"& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
 				}}
 			>
@@ -86,7 +85,7 @@ export default function ResponsiveDrawer({
 			<Drawer
 				variant='persistent'
 				sx={{
-					display: { xs: "none", sm: "block" },
+					display: { xs: "none", md: "block" },
 					"& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
 				}}
 				open
