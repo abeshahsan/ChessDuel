@@ -13,11 +13,12 @@ import {
 	Toolbar,
 } from "@mui/material";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
 	{ text: "Home", href: "/", icon: <Home /> },
-	{ text: "About", href: "/about", icon: <Info /> },
-	{ text: "Contact", href: "/contact", icon: <MailIcon /> },
+	{ text: "About", href: "#", icon: <Info /> },
+	{ text: "Contact", href: "#", icon: <MailIcon /> },
 	{ text: "New-Match", href: "match/new", icon: <SportsEsports /> },
 ];
 
@@ -32,38 +33,28 @@ export default function ResponsiveDrawer({
 	handleDrawerClose: () => void;
 	handleDrawerTransitionEnd: () => void;
 }) {
+	const path = usePathname() as string;
+
 	const drawer = (
 		<>
 			<Toolbar />
 			<Divider />
 			<List>
 				{navLinks.map(({ text, href, icon }, index) => (
-					<Link href={href} key={index}>
-						<ListItem
-							disablePadding
-						>
-							<ListItemButton>
-								<ListItemIcon>{icon}</ListItemIcon>
-								<ListItemText primary={text} />
-							</ListItemButton>
-						</ListItem>
-					</Link>
-				))}
-			</List>
-			<Divider />
-			{/* <List>
-				{["All mail", "Trash", "Spam"].map((text, index) => (
 					<ListItem
-						key={text}
+						key={index}
+						component={Link}
+						href={href}
 						disablePadding
 					>
-						<ListItemButton>
-							<ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+						<ListItemButton selected={path === href}>
+							<ListItemIcon>{icon}</ListItemIcon>
 							<ListItemText primary={text} />
 						</ListItemButton>
 					</ListItem>
 				))}
-			</List> */}
+			</List>
+			<Divider />
 		</>
 	);
 
