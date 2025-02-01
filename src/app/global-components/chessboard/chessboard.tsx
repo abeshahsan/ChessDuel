@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { CSSProperties } from "react";
 import { Chess, Piece, Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
-import * as PieceIcons from "@/app/piece_icons/piece_icons";
+import * as PieceIcons from "@/app/global-components/piece_icons/piece_icons";
 import { JSX } from "@emotion/react/jsx-runtime";
 import Grid from "@mui/material/Grid2";
 import { Box, Button, Typography } from "@mui/material";

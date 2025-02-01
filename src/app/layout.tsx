@@ -1,9 +1,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
-import Navbar from "@/app/global-components/navbar/navbar";
-import Sidebar from "@/app/global-components/sidebar/sidebar";
 import { Metadata } from "next";
 import StoreProvider from "./store/StoreProvider";
+import { Box, Toolbar } from "@mui/material";
+import NavAndDrawer from "./nav_and_drawer";
+
+const drawerWidth = 240;
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -33,13 +35,22 @@ export default async function RootLayout({
 			suppressHydrationWarning={true}
 		>
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased pt-20 `}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 				suppressHydrationWarning={true}
 			>
 				<StoreProvider>
-					<Navbar />
-					<Sidebar />
-					<div className={`md:ml-[${left}px] md:w-[calc(100%-${left}px)]`}>{children}</div>
+					<Box sx={{ display: "flex" }}>
+						<NavAndDrawer
+							// drawerWidth={drawerWidth}
+						 />
+						<Box
+							component='main'
+							sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+						>
+							<Toolbar />
+							{children}
+						</Box>
+					</Box>
 				</StoreProvider>
 			</body>
 		</html>

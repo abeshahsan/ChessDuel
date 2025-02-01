@@ -16,7 +16,7 @@ import { Skeleton } from "@mui/material";
 // export const pages = ["Products", "Pricing", "Blog"];
 export const pages = [];
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({ handleDrawerToggle }: { handleDrawerToggle: () => void }) {
 	return (
 		<AppBar
 			position='fixed'
@@ -53,7 +53,10 @@ function ResponsiveAppBar() {
 						</Typography>
 					</Link>
 
-					<MdNavMenu pages={pages} />
+					<MdNavMenu
+						pages={pages}
+						handleDrawerToggle={handleDrawerToggle}
+					/>
 
 					<div className='ml-10 hidden md:block' />
 

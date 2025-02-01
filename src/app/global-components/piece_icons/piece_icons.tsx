@@ -1,17 +1,17 @@
 import React from "react";
 
-import WhiteKingIcon from "@/app/piece_icons/white-king.png";
-import BlackKingIcon from "@/app/piece_icons/black-king.png";
-import WhiteQueenIcon from "@/app/piece_icons/white-queen.png";
-import BlackQueenIcon from "@/app/piece_icons/black-queen.png";
-import WhiteRookIcon from "@/app/piece_icons/white-rook.png";
-import BlackRookIcon from "@/app/piece_icons/black-rook.png";
-import WhiteBishopIcon from "@/app/piece_icons/white-bishop.png";
-import BlackBishopIcon from "@/app/piece_icons/black-bishop.png";
-import WhiteKnightIcon from "@/app/piece_icons/white-knight.png";
-import BlackKnightIcon from "@/app/piece_icons/black-knight.png";
-import WhitePawnIcon from "@/app/piece_icons/white-pawn.png";
-import BlackPawnIcon from "@/app/piece_icons/black-pawn.png";
+import WhiteKingIcon from "@/app/global-components/piece_icons/white-king.png";
+import BlackKingIcon from "@/app/global-components/piece_icons/black-king.png";
+import WhiteQueenIcon from "@/app/global-components/piece_icons/white-queen.png";
+import BlackQueenIcon from "@/app/global-components/piece_icons/black-queen.png";
+import WhiteRookIcon from "@/app/global-components/piece_icons/white-rook.png";
+import BlackRookIcon from "@/app/global-components/piece_icons/black-rook.png";
+import WhiteBishopIcon from "@/app/global-components/piece_icons/white-bishop.png";
+import BlackBishopIcon from "@/app/global-components/piece_icons/black-bishop.png";
+import WhiteKnightIcon from "@/app/global-components/piece_icons/white-knight.png";
+import BlackKnightIcon from "@/app/global-components/piece_icons/black-knight.png";
+import WhitePawnIcon from "@/app/global-components/piece_icons/white-pawn.png";
+import BlackPawnIcon from "@/app/global-components/piece_icons/black-pawn.png";
 
 const ImageComponent = ({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) => (
 	<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
