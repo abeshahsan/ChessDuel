@@ -1,11 +1,23 @@
 "use client";
 
-import { Container, Typography, Button, Box } from "@mui/material";
-import { signIn } from "next-auth/react";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import GoogleIcon from "@mui/icons-material/Google";
+import { Box, Button, Container, Typography } from "@mui/material";
+import { signIn } from "next-auth/react";
+
 
 export default function SignInPage() {
+
+	const handleSignIn = async (provider: string) => {
+		try {
+			await signIn(provider, { redirectTo: "/" });
+			console.log("Sign-in successful");
+			
+		} catch (error) {
+			console.error("Sign-in error:", error);
+		}
+	};
+
 	return (
 		<Container>
 			<Typography
@@ -19,14 +31,14 @@ export default function SignInPage() {
 				<Button
 					variant='contained'
 					startIcon={<GitHubIcon />}
-					onClick={() => signIn("github")}
+					onClick={() => handleSignIn("github")}
 				>
 					Sign in with GitHub
 				</Button>
 				<Button
 					variant='contained'
 					startIcon={<GoogleIcon />}
-					onClick={() => signIn("google")}
+					onClick={() => handleSignIn("google")}
 					color='error'
 				>
 					Sign in with Google
