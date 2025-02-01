@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { CSSProperties } from "react";
-import { Chess, Piece, Square } from "chess.js";
-import { Chessboard } from "react-chessboard";
 import * as PieceIcons from "@/app/global-components/piece_icons/piece_icons";
-import { JSX } from "@emotion/react/jsx-runtime";
-import Grid from "@mui/material/Grid2";
-import { Box, Button, Typography } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
-import useChessboardEffect from "@/app/match/hooks/useChessboardEffect";
-import { subscribe } from "@/app/store/client_socket_slice";
+import { JSX } from "@emotion/react/jsx-runtime";
+import { Box, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { Chess, Piece, Square } from "chess.js";
+import React, { CSSProperties, useState } from "react";
+import { Chessboard } from "react-chessboard";
+import { useDispatch, useSelector } from "react-redux";
 
 type ChessboardUIProps = {
 	game: Chess;
@@ -32,13 +29,6 @@ const ChessboardUI = ({ game, setGame }: ChessboardUIProps) => {
 
 	return (
 		<div className='container mx-auto w-full h-screen'>
-			<Button
-				onClick={() => {
-					socket?.emit("message", "Hello from client");
-				}}
-			>
-				Send Message to Server
-			</Button>
 			<Chessboard
 				id='ChessboardWithEvents'
 				customPieces={pieceIcons}

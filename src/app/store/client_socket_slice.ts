@@ -2,7 +2,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
-import { Socket, io as ClientSocket } from "socket.io-client";
+import { io as ClientSocket, Socket } from "socket.io-client";
 
 interface ClientSocketState {
 	socket: Socket | null;
@@ -11,7 +11,6 @@ interface ClientSocketState {
 			[event: string]: (...args: any[]) => void;
 		}[];
 	};
-	sidebarOpen: boolean;
 }
 
 // Singleton Socket Initialization
@@ -34,7 +33,6 @@ function initializeSocket(clientID: string | null): Socket | null {
 const initialState: ClientSocketState = {
 	socket: null,
 	subscribers: {},
-	sidebarOpen: false,
 };
 
 const clientSocketSlice = createSlice({
@@ -89,17 +87,21 @@ const clientSocketSlice = createSlice({
 				}
 			}
 		},
-		setSidebarOpen: (state, action) => {
-			state.sidebarOpen = action.payload;
-		},
+
 		initializeSocketAfterLoad: (state, action: PayloadAction<string | null>) => {
 			state.socket = initializeSocket(action.payload) as unknown as WritableDraft<Socket>;
 		},
 	},
 });
 
-export const { disconnectSocket, subscribe, addEventHandler, unsubscribeComponent, unsubscribeEvent, setSidebarOpen, initializeSocketAfterLoad } =
-	clientSocketSlice.actions;
+export const {
+	disconnectSocket,
+	subscribe,
+	addEventHandler,
+	unsubscribeComponent,
+	unsubscribeEvent,
+	initializeSocketAfterLoad,
+} = clientSocketSlice.actions;
 
 export const selectSocket = (state: { clientSocket: ClientSocketState }) => state.clientSocket.socket;
 

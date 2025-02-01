@@ -1,20 +1,9 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Box, Toolbar } from "@mui/material";
 import { Metadata } from "next";
-import StoreProvider from "./store/StoreProvider";
-import { Box, Toolbar, CssBaseline } from "@mui/material";
 import NavAndDrawer from "./global-components/nav_and_drawer";
+import StoreProvider from "./store/StoreProvider";
 
 import "@/app/globals.css";
-
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
 	title: "ChessDuel",
@@ -33,10 +22,7 @@ export default async function RootLayout({
 			lang='en'
 			suppressHydrationWarning={true}
 		>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-				suppressHydrationWarning={true}
-			>
+			<body suppressHydrationWarning={true}>
 				<StoreProvider>
 					<Box sx={{ display: "flex" }}>
 						<NavAndDrawer drawerWidth={drawerWidth} />

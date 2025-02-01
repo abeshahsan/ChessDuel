@@ -10,13 +10,17 @@ import Button from "@mui/material/Button";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import UserMenu from "./user_menu";
-import { IconButton, Skeleton } from "@mui/material";
+import { IconButton, Skeleton, Switch, useTheme } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import { DarkMode, LightMode } from "@mui/icons-material";
+import { useThemeToggle } from "@/app/store/StoreProvider";
 
-// export const pages = ["Products", "Pricing", "Blog"];
 export const pages = [];
 
 function ResponsiveAppBar({ handleDrawerToggle }: { handleDrawerToggle: () => void }) {
+	const toggleTheme = useThemeToggle();
+	const theme = useTheme();
+
 	return (
 		<AppBar
 			position='fixed'
@@ -101,7 +105,27 @@ function ResponsiveAppBar({ handleDrawerToggle }: { handleDrawerToggle: () => vo
 						))}
 					</Box>
 
-					<NavbarActions />
+					<Box
+						display={"flex"}
+						alignItems={"center"}
+						justifyContent={"center"}
+						gap={1.5}
+					>
+						<IconButton
+							sx={{
+								border: "1px solid",
+								borderRadius: "50%",
+								borderColor: "inherit",
+							}}
+						>
+							{theme.palette.mode === "dark" ? (
+								<DarkMode onClick={toggleTheme} />
+							) : (
+								<LightMode onClick={toggleTheme} />
+							)}
+						</IconButton>
+						<NavbarActions />
+					</Box>
 				</Toolbar>
 			</Container>
 		</AppBar>
