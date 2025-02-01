@@ -1,17 +1,18 @@
 "use client";
 
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { SessionProvider } from "next-auth/react";
+import { useEffect } from "react";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { RootState, store } from ".";
-import { useEffect } from "react";
+import { darkTheme } from "../theme";
 import { initializeSocketAfterLoad } from "./client_socket_slice";
-import { ThemeProvider } from "@mui/material";
-import theme from "../theme";
-import { SessionProvider } from "next-auth/react";
 
 export default function StoreProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<Provider store={store}>
-			<ThemeProvider theme={theme}>
+			<ThemeProvider theme={darkTheme}>
+				<CssBaseline />
 				<SessionProvider>
 					<_StoreProviderComponent>{children}</_StoreProviderComponent>
 				</SessionProvider>

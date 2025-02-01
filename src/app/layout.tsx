@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Metadata } from "next";
 import StoreProvider from "./store/StoreProvider";
-import { Box, Toolbar } from "@mui/material";
+import { Box, Toolbar, CssBaseline } from "@mui/material";
 import NavAndDrawer from "./global-components/nav_and_drawer";
 
 import "@/app/globals.css";
@@ -42,7 +42,11 @@ export default async function RootLayout({
 						<NavAndDrawer drawerWidth={drawerWidth} />
 						<Box
 							component='main'
-							sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+							sx={{
+								flexGrow: 1,
+								p: 3,
+								width: { sm: `calc(100% - ${drawerWidth}px)` },
+							}}
 						>
 							<Toolbar />
 							{children}
