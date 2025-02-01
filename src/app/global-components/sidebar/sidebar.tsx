@@ -1,7 +1,6 @@
 "use client";
 
-import MailIcon from "@mui/icons-material/Mail";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
+import { Home, Info, Mail as MailIcon, MoveToInbox as InboxIcon, SportsEsports } from "@mui/icons-material";
 import {
 	Box,
 	Divider,
@@ -13,6 +12,14 @@ import {
 	ListItemText,
 	Toolbar,
 } from "@mui/material";
+import Link from "next/link";
+
+const navLinks = [
+	{ text: "Home", href: "/", icon: <Home /> },
+	{ text: "About", href: "/about", icon: <Info /> },
+	{ text: "Contact", href: "/contact", icon: <MailIcon /> },
+	{ text: "New-Match", href: "match/new", icon: <SportsEsports /> },
+];
 
 export default function ResponsiveDrawer({
 	drawerWidth,
@@ -25,27 +32,26 @@ export default function ResponsiveDrawer({
 	handleDrawerClose: () => void;
 	handleDrawerTransitionEnd: () => void;
 }) {
-	
-
 	const drawer = (
 		<>
 			<Toolbar />
 			<Divider />
 			<List>
-				{["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-					<ListItem
-						key={text}
-						disablePadding
-					>
-						<ListItemButton>
-							<ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-							<ListItemText primary={text} />
-						</ListItemButton>
-					</ListItem>
+				{navLinks.map(({ text, href, icon }, index) => (
+					<Link href={href} key={index}>
+						<ListItem
+							disablePadding
+						>
+							<ListItemButton>
+								<ListItemIcon>{icon}</ListItemIcon>
+								<ListItemText primary={text} />
+							</ListItemButton>
+						</ListItem>
+					</Link>
 				))}
 			</List>
 			<Divider />
-			<List>
+			{/* <List>
 				{["All mail", "Trash", "Spam"].map((text, index) => (
 					<ListItem
 						key={text}
@@ -57,7 +63,7 @@ export default function ResponsiveDrawer({
 						</ListItemButton>
 					</ListItem>
 				))}
-			</List>
+			</List> */}
 		</>
 	);
 
