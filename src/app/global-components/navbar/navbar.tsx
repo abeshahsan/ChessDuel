@@ -163,8 +163,14 @@ function SignInButton() {
 	return (
 		<Button
 			variant='contained'
-			sx={{ my: 2, display: "block", backgroundColor: "#fc8c03", ":hover": { backgroundColor: "#f5a623" } }}
-			onClick={() => signIn()}
+			sx={{ 
+				my: 2, 
+				display: "block", 
+				backgroundColor: "#fc8c03", 
+				":hover": { backgroundColor: "#f5a623" },
+				fontWeight: "bold"
+			}}
+			onClick={() => signIn(undefined, { callbackUrl: window.location.pathname })}
 		>
 			Sign in
 		</Button>
