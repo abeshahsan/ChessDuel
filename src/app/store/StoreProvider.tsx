@@ -8,6 +8,7 @@ import { Provider, useDispatch, useSelector } from "react-redux";
 import { RootState, store } from ".";
 import { lightTheme, darkTheme } from "../theme";
 import { initializeSocketAfterLoad } from "./client_socket_slice";
+import UserProfileProvider from "../providers/UserProfileProvider";
 
 function _SocketProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
@@ -75,7 +76,9 @@ export default function StoreProvider({ children }: Readonly<{ children: React.R
 			<_ThemeProvider>
 				<CssBaseline />
 				<SessionProvider>
-					<_SocketProvider>{children}</_SocketProvider>
+					<UserProfileProvider>
+						<_SocketProvider>{children}</_SocketProvider>
+					</UserProfileProvider>
 				</SessionProvider>
 			</_ThemeProvider>
 		</Provider>

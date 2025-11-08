@@ -1,307 +1,202 @@
 "use client";
 
-import * as PieceIcons from "@/app/global-components/piece_icons/piece_icons";
+import React from "react";
+import { Box } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
-import { JSX } from "@emotion/react/jsx-runtime";
-import { Box, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
-import { Chess, Piece, Square } from "chess.js";
-import React, { CSSProperties, useState } from "react";
-import { Chessboard } from "react-chessboard";
-import { useDispatch, useSelector } from "react-redux";
+import {
+	ChessboardUIProps,
+	MatchHeader,
+	PlayerCard,
+	GameBoard,
+	GameDialogs,
+	usePlayerInfo,
+	useGameTurn,
+	useBoardSize,
+	useDrawOffer,
+	useGameOver,
+	useChessSquareStyles,
+	useChessSquareClick,
+	getPlayerName,
+	normalizeCapturedPieces,
+} from "./components";
 
-type ChessboardUIProps = {
-	game: Chess;
-	setGame: any;
-};
-
-const ChessboardUI = ({ game, setGame }: ChessboardUIProps) => {
-	const [validSquares, setValidSquares] = useState<Square[]>([]);
-	const [activeSquare, setActiveSquare] = useState<Square | null>(null);
-	const [capturedPieces, setCapturedPieces] = useState<Piece[]>([]);
-
-	let customSquareStyles: ICustomSquareStyles = {};
+/**
+ * ChessboardUI Component
+ * Main orchestrator component that manages the chess game interface
+ * Following SOLID principles - delegates specific responsibilities to child components
+ */
+const ChessboardUI: React.FC<ChessboardUIProps> = ({
+	game,
+	setGame,
+	matchId,
+	capturedPieces = [],
+	finished,
+}) => {
+	const theme = useTheme();
 	const socket = useSelector((state: RootState) => state.clientSocket.socket);
-	const match = useSelector((state: RootState) => state.match);
-	const dispatch = useDispatch();
 
-	updateSquareStyles();
+	// Extract player and match information
+	const { myColor, match } = usePlayerInfo();
+
+	// Extract game turn logic
+	const { myTurn } = useGameTurn(myColor, game);
+
+	// Extract board sizing logic
+	const { containerRef, boardSidePx } = useBoardSize();
+
+	// Extract draw offer logic
+	const { drawOffer, setDrawOffer, respondToDraw } = useDrawOffer(matchId, match);
+
+	// Extract game over logic
+	const { gameOverOpen, setGameOverOpen } = useGameOver(game, finished);
+
+	// Extract square click logic
+	const { selectedSquare, setSelectedSquare, onSquareClick } = useChessSquareClick(
+		myTurn,
+		myColor,
+		game,
+		matchId,
+		match
+	);
+
+	// Extract square styles logic
+	const { squareStyles } = useChessSquareStyles(selectedSquare, game, myTurn);
+
+	// Normalize captured pieces
+	const normalizedCaptured = normalizeCapturedPieces(capturedPieces);
+
+	// Handle game actions
+	const handleOfferDraw = () => {
+		socket?.emit("offer-draw", matchId);
+	};
+
+	const handleResign = () => {
+		socket?.emit("resign", matchId);
+	};
+
+	const handleDrawResponse = (accept: boolean) => {
+		respondToDraw(accept);
+	};
+
+	const handleDrawOfferClose = () => {
+		setDrawOffer(null);
+	};
+
+	const handleGameOverClose = () => {
+		setGameOverOpen(false);
+	};
 
 	return (
-		<div className='container mx-auto w-full h-screen'>
-			<Chessboard
-				id='ChessboardWithEvents'
-				customPieces={pieceIcons}
-				position={game.fen()}
-				onSquareClick={onSquareClick}
-				customSquareStyles={customSquareStyles}
-				arePiecesDraggable={false}
+		<div
+			ref={containerRef}
+			style={{
+				width: "100%",
+				height: "100%",
+				padding: theme.spacing(2),
+				boxSizing: "border-box",
+				display: "flex",
+				flexDirection: "column",
+				gap: theme.spacing(2),
+				backgroundColor: theme.palette.background.default,
+				minHeight: "100vh",
+			}}
+		>
+			{/* Match Header */}
+			<MatchHeader
+				game={game}
+				myTurn={myTurn}
+				matchId={matchId}
+				onOfferDraw={handleOfferDraw}
+				onResign={handleResign}
 			/>
-			<div className='mt-1 mb-1'>
-				<CapturedPieces
-					capturedPieces={capturedPieces}
-					color='w'
-				/>
-				<CapturedPieces
-					capturedPieces={capturedPieces}
-					color='b'
-				/>
-			</div>
-			<Grid
-				sx={{
-					minHeight: { xs: "20px", sm: "30px", md: "40px" },
-					backgroundColor: "white",
-					border: "1px solid black",
-					borderRadius: { xs: "2px", sm: "3px", md: "5px" },
-					padding: { xs: "1px", sm: "1px", md: "1px" },
-					marginTop: "2px",
-					marginBottom: "2px",
+
+			{/* Main Game Layout */}
+			<Box
+				display="flex"
+				gap={3}
+				style={{
+					width: "100%",
+					flex: 1,
+					minHeight: 400,
+					alignItems: "stretch",
+					flexDirection: "row",
+					flexWrap: "wrap",
+					justifyContent: "center",
 				}}
-				container
-				columns={4}
 			>
-				<Grid
-					size={1}
+				{/* Opponent Player Card */}
+				<Box
 					sx={{
-						backgroundColor: "#e0d1ad",
-						border: "1px solid black",
-						borderRadius: { xs: "2px", sm: "3px", md: "5px" },
+						minWidth: { xs: "100%", md: 240 },
+						maxWidth: { xs: "100%", md: 280 },
+						display: "flex",
+						flexDirection: "column",
+						gap: 2,
+						alignItems: "stretch",
 					}}
 				>
-					<Box
-						display='flex'
-						alignItems='center'
-						justifyContent='center'
-						height='100%'
-					>
-						<Typography
-							align='center'
-							sx={{
-								fontWeight: "bold",
-								fontSize: { xs: "14px", sm: "16px", md: "18px" },
-								color: "black",
-								opacity: game.turn() === "b" ? 1 : 0.5,
-							}}
-						>
-							Black's Turn
-						</Typography>
-					</Box>
-				</Grid>
-				<Grid
-					size={2}
+					<PlayerCard
+						name={getPlayerName(match, myColor === "white" ? "black" : "white")}
+						color={myColor === "white" ? "black" : "white"}
+						active={game.turn() === (myColor === "white" ? "b" : "w")}
+						capturedByOpp={normalizedCaptured.filter(
+							(p) => p.color === (myColor === "white" ? "w" : "b")
+						)}
+						isOpponent={true}
+					/>
+				</Box>
+
+				{/* Game Board */}
+				<GameBoard
+					game={game}
+					myColor={myColor}
+					myTurn={myTurn}
+					selectedSquare={selectedSquare}
+					boardSidePx={boardSidePx}
+					squareStyles={squareStyles}
+					onSquareClick={onSquareClick}
+					containerRef={containerRef}
+				/>
+
+				{/* My Player Card */}
+				<Box
 					sx={{
-						backgroundColor: "#e0d1ad",
-						border: "1px solid black",
-						borderRadius: { xs: "2px", sm: "3px", md: "5px" },
+						minWidth: { xs: "100%", md: 240 },
+						maxWidth: { xs: "100%", md: 280 },
+						display: "flex",
+						flexDirection: "column",
+						gap: 2,
+						alignItems: "stretch",
 					}}
 				>
-					<Box
-						display='flex'
-						alignItems='center'
-						justifyContent='center'
-						height='100%'
-					>
-						<Typography
-							variant='h6'
-							align='center'
-							sx={{ fontWeight: "bold", color: "#000" }}
-						>
-							{showGameMessage()}
-						</Typography>
-					</Box>
-				</Grid>
-				<Grid
-					size={1}
-					sx={{
-						backgroundColor: "#e0d1ad",
-						border: "1px solid black",
-						borderRadius: { xs: "2px", sm: "3px", md: "5px" },
-					}}
-				>
-					<Box
-						display='flex'
-						alignItems='center'
-						justifyContent='center'
-						height='100%'
-					>
-						<Typography
-							align='center'
-							sx={{
-								fontWeight: "bold",
-								fontSize: { xs: "14px", sm: "16px", md: "18px" },
-								color: "black",
-								opacity: game.turn() === "w" ? 1 : 0.5,
-							}}
-						>
-							White's Turn
-						</Typography>
-					</Box>
-				</Grid>
-			</Grid>
+					<PlayerCard
+						name={getPlayerName(match, myColor || "white")}
+						color={myColor || "white"}
+						active={game.turn() === (myColor === "white" ? "w" : "b")}
+						capturedByOpp={normalizedCaptured.filter(
+							(p) => p.color === (myColor === "white" ? "b" : "w")
+						)}
+						isOpponent={false}
+					/>
+				</Box>
+			</Box>
+
+			{/* Game Dialogs */}
+			<GameDialogs
+				drawOffer={drawOffer}
+				gameOverOpen={gameOverOpen}
+				finished={finished || null}
+				myColor={myColor}
+				game={game}
+				matchId={matchId}
+				onDrawOfferClose={handleDrawOfferClose}
+				onGameOverClose={handleGameOverClose}
+				onDrawResponse={handleDrawResponse}
+			/>
 		</div>
 	);
-
-	function showGameMessage() {
-		if (game.isCheckmate()) {
-			return "Check Mate";
-		}
-		if (game.isCheck()) {
-			return "Check";
-		}
-		return "";
-	}
-
-	function onSquareClick(square: Square) {
-		if (activeSquare) {
-			try {
-				const capturedPiece = game.get(square);
-
-				game.move({
-					from: activeSquare,
-					to: square,
-					promotion: "q",
-				});
-
-				socket?.emit("chess-move", match.id, { from: activeSquare, to: square, promotion: "q" });
-
-				if (capturedPiece) {
-					setCapturedPieces(() => {
-						return [...capturedPieces, capturedPiece];
-					});
-				}
-
-				setGame(() => {
-					return new Chess(game.fen());
-				});
-				setActiveSquare(null);
-				setValidSquares([]);
-			} catch (error) {
-				setActiveSquare(null);
-				setValidSquares([]);
-			}
-		} else {
-			if (hasPiece(square) && hasTurn(square)) {
-				setActiveSquare(square);
-				setValidSquares(game.moves({ square: square }) as Square[]);
-			}
-		}
-	}
-
-	function hasPiece(square: Square): boolean {
-		return game.get(square) !== null;
-	}
-
-	function hasTurn(square: Square): boolean {
-		return game.get(square).color === game.turn();
-	}
-
-	function updateSquareStyles() {
-		validSquares.forEach((square: Square) => {
-			square = square
-				.toString()
-				.replace(/[x+]|=./gi, "")
-				.slice(-2) as Square;
-
-			customSquareStyles[square] = {
-				background: validSquaresColor,
-			};
-		});
-		if (activeSquare) {
-			customSquareStyles[activeSquare] = {
-				background: activeSquareColor,
-			};
-		}
-	}
-};
-
-const CapturedPieces = ({ capturedPieces, color }: { capturedPieces: Piece[]; color: string }) => {
-	if (color === "w") {
-		capturedPieces = capturedPieces.filter((piece: Piece) => piece.color === "w");
-	} else {
-		capturedPieces = capturedPieces.filter((piece: Piece) => piece.color === "b");
-	}
-	return (
-		<>
-			<Grid
-				sx={{
-					backgroundColor: "#e0d1ad",
-					border: "1px solid black",
-					borderRadius: { xs: "2px", sm: "3px", md: "5px" },
-					padding: { xs: "1px", sm: "3px", md: "5px" },
-				}}
-				container
-				columns={16}
-			>
-				{capturedPieces.length > 0 ? (
-					capturedPieces.map((piece: Piece, index: number) => {
-						let PieceIcon: ({ style }: { style: CSSProperties }) => JSX.Element;
-
-						PieceIcon = pieceIcons[getPieceIocnsKey(piece.color, piece.type)] as ({
-							style,
-						}: {
-							style: CSSProperties;
-						}) => JSX.Element;
-						const customStyle: CSSProperties = {
-							aspectRatio: "1",
-							width: "60%",
-						};
-						return (
-							<Grid
-								maxHeight={{ md: "18px", sm: "12px", xs: "7px" }}
-								key={index}
-								size={1}
-							>
-								<PieceIcon style={customStyle} />
-							</Grid>
-						);
-					})
-				) : (
-					<Grid
-						maxHeight={{ md: "15px", sm: "10px", xs: "5px" }}
-						size={1}
-						sx={{ visibility: "hidden" }}
-					>
-						Placeholder
-					</Grid>
-				)}
-			</Grid>
-		</>
-	);
-};
-
-const validSquaresColor = "radial-gradient(circle, rgb(0, 255, 0) 45%, transparent 45%)";
-const activeSquareColor = "radial-gradient(circle,  transparent 20%, rgb(113, 113, 238) 85%)";
-
-interface ICustomSquareStyles {
-	[key: string]: {
-		background: string;
-	};
-}
-
-interface ICustomPieces {
-	[key: string]: ({ style }: { style: CSSProperties }) => React.JSX.Element;
-}
-
-const getPieceIocnsKey = (color: string, type: string): string => {
-	color = color.toLowerCase();
-	type = type.toLowerCase();
-
-	return color + type.toUpperCase();
-};
-
-const pieceIcons: ICustomPieces = {
-	wK: ({ style }: { style: CSSProperties }) => <PieceIcons.WhiteKing style={style} />,
-	wQ: ({ style }: { style: CSSProperties }) => <PieceIcons.WhiteQueen style={style} />,
-	wR: ({ style }: { style: CSSProperties }) => <PieceIcons.WhiteRook style={style} />,
-	wN: ({ style }: { style: CSSProperties }) => <PieceIcons.WhiteKnight style={style} />,
-	wB: ({ style }: { style: CSSProperties }) => <PieceIcons.WhiteBishop style={style} />,
-	wP: ({ style }: { style: CSSProperties }) => <PieceIcons.WhitePawn style={style} />,
-	bK: ({ style }: { style: CSSProperties }) => <PieceIcons.BlackKing style={style} />,
-	bQ: ({ style }: { style: CSSProperties }) => <PieceIcons.BlackQueen style={style} />,
-	bR: ({ style }: { style: CSSProperties }) => <PieceIcons.BlackRook style={style} />,
-	bN: ({ style }: { style: CSSProperties }) => <PieceIcons.BlackKnight style={style} />,
-	bB: ({ style }: { style: CSSProperties }) => <PieceIcons.BlackBishop style={style} />,
-	bP: ({ style }: { style: CSSProperties }) => <PieceIcons.BlackPawn style={style} />,
 };
 
 export default ChessboardUI;

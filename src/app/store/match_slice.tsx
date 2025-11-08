@@ -1,12 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface Player {
+	id: string;
+	name: string;
+	email?: string;
+	image?: string;
+	color: "white" | "black";
+	socketID: string;
+}
+
+export type MatchStatus = "pending" | "ready" | "started" | "finished" | "cancelled" | "waiting" | "playing";
+
 export interface MatchState {
 	id: string;
-	players: {
-		color: string;
-		id: string;
-		socketID: string;
-	}[];
+	createdAt?: Date;
+	status?: MatchStatus;
+	players: Player[];
 	state?: {
 		turn: string;
 		history: string[];
@@ -15,18 +24,7 @@ export interface MatchState {
 
 const initialState: MatchState = {
 	id: "",
-	players: [
-		{
-			color: "",
-			id: "",
-			socketID: "",
-		},
-		{
-			color: "",
-			id: "",
-			socketID: "",
-		},
-	],
+	players: [],
 	state: {
 		turn: "",
 		history: [],
@@ -39,14 +37,14 @@ const matchSlice = createSlice({
 	reducers: {
 		createMatch: (state, action: PayloadAction<MatchState>) => {
 			state.id = action.payload.id;
-			state.players = [
-				action.payload.players[0],
-				action.payload.players[1],
-			];
+			state.createdAt = action.payload.createdAt;
+			state.status = action.payload.status;
+			state.players = action.payload.players;
 			state.state = action.payload.state;
 		},
 		updateMatch: (state, action: PayloadAction<MatchState>) => {
 			state.id = action.payload.id;
+			state.status = action.payload.status ?? state.status;
 			state.players = action.payload.players;
 			state.state = action.payload.state;
 		},

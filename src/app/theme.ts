@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-// Base theme configuration
+// Base theme configuration with scrollbar fix
 const baseTheme = {
 	typography: {
 		fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -21,6 +21,31 @@ const baseTheme = {
 			md: 960,
 			lg: 1280,
 			xl: 1920,
+		},
+	},
+	// Global component overrides to prevent scrollbar hiding
+	components: {
+		MuiModal: {
+			defaultProps: {
+				disableScrollLock: true, // Prevent scrollbar hiding for all modals
+			},
+		},
+		MuiDialog: {
+			defaultProps: {
+				disableScrollLock: true, // Prevent scrollbar hiding for all dialogs
+			},
+		},
+		MuiDrawer: {
+			defaultProps: {
+				ModalProps: {
+					disableScrollLock: true, // Prevent scrollbar hiding for all drawers
+				},
+			},
+		},
+		MuiMenu: {
+			defaultProps: {
+				disableScrollLock: true, // Prevent scrollbar hiding for all menus
+			},
 		},
 	},
 };

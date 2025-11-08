@@ -2,3 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix for Material-UI scrollbar hiding issue */
+html {
+	scrollbar-gutter: stable;
+	overflow-y: scroll;
+}
+
+body {
+	/* Prevent layout shift when modals/drawers open */
+	margin: 0;
+	padding: 0;
+	/* Ensure scrollbar is always visible */
+	overflow-y: auto;
+}
+
+/* Prevent Material-UI from hiding scrollbar */
+.MuiModal-root {
+	/* Disable scroll lock behavior */
+	padding-right: 0 !important;
+}
+
+/* Ensure body doesn't get padding when drawer/modal opens */
+body[style*="padding-right"] {
+	padding-right: 0 !important;
+}
+
